@@ -4,38 +4,32 @@ $pageTitle = 'Форма';
 
 include 'Includes/header.php';
 
-if ($_POST)
-{
+if ($_POST) {
     $name = trim($_POST['name']);
     $name = str_replace('>', '', $name);
-    $cost = trim($_POST['cost']);
+    $cost = trim(str_replace(',', '.', $_POST['cost']));
     $cost = (float) str_replace('>', '', $cost);
     $selectedGroup = (int) $_POST['group'];
     $error = false;
-    if (mb_strlen($name) < 3)
-    {
+    if (mb_strlen($name) < 3) {
         echo '<p>Името е прекалено късо!</p>';
         $error = true;
     }
 
-    if ($cost < 0)
-    {
+    if ($cost <= 0) {
         echo '<p>Невалидна сума!</p>';
         $error = true;
     }
 
-    if (!array_key_exists($selectedGroup, $groups))
-    {
+    if (!array_key_exists($selectedGroup, $groups)) {
         echo '<p>Невалидна група!</p>';
         $error = true;
     }
 
-    $created = date( 'Y.m.d H:i:s' );
-    if (!$error)
-    {
+    $created = date('Y.m.d H:i:s');
+    if (!$error) {
         $result = $created.' > '.$name.' > '.$cost.' > '.$selectedGroup."\n\r";
-        if (file_put_contents('expenses.txt', $result, FILE_APPEND))
-        {
+        if (file_put_contents("Database".DIRECTORY_SEPARATOR."expenses.txt", $result, FILE_APPEND)) {
             echo 'Записa е успешен!';
         }
     }
@@ -51,8 +45,7 @@ if ($_POST)
                 <span>Вид: </span>
                 <select name="group">
                     <?php
-                    foreach ($groups as $key => $value)
-                    {
+                    foreach ($groups as $key => $value) {
                         echo '<option value="'.$key.'">'.$value.'</option>';
                     }
                     ?>
