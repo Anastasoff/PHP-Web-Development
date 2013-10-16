@@ -1,0 +1,51 @@
+<?php
+$pageTitle = "Начало";
+include 'includes/header.php';
+?>
+
+<?php
+$sql = 'SELECT books.book_id, books.book_title, authors.author_name, authors.author_id FROM books
+LEFT JOIN books_authors ON books_authors.book_id = books.book_id
+LEFT JOIN authors ON books_authors.author_id = authors.author_id';
+
+$query = mysqli_query($connection, $sql);
+if (!$query) {
+    echo 'Connection problem';
+    echo mysqli_error($connection);
+    exit;
+}
+
+$books = array();
+while ($row = mysqli_fetch_assoc($query)) {
+    $books[$row['book_id']]['title'] = $row['book_title'];
+    $books[$row['book_id']]['authors'][$row['author_id']] = $row['author_name'];
+}
+
+$countBooks = count($books);
+if ($countBooks > 0) {
+    ?>
+    <table border="1">
+        <tr>
+            <th>Книга</th>
+            <th>Автори</th>
+        </tr>
+        <?php foreach ($books as $book) { ?>
+            <tr>
+                <td><?= $book['title'] ?></td>
+                <td>
+                    <?php foreach ($book['authors'] as $authorId => $authorName) { ?>
+                        <a href="all_author_books.php?author_id=<?= $authorId ?>"><?= $authorName ?></a>
+                    <?php } ?>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+    <?php
+}
+else {
+    ?>
+    <p>Няма въведени книги!</p>
+    <?php
+}
+
+include 'includes/footer.php';
